@@ -4,6 +4,7 @@ import json
 import logging
 
 from flask import Flask, request, make_response
+import weasyprint
 from weasyprint import HTML
 
 app = Flask('pdf')
@@ -11,6 +12,10 @@ app = Flask('pdf')
 @app.route('/health')
 def index():
     return 'ok'
+
+@app.route('/version')
+def version_index():
+    return weasyprint.__version__
 
 
 @app.before_first_request
