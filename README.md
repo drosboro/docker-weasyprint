@@ -1,6 +1,6 @@
 # docker-weasyprint
 
-This is a very simple Dockerfile to create a [weasyprint][weasy] service.  It uses a gunicorn wsgi server by [aquavitae][aquavitae-repo].
+This is a very simple Dockerfile to create a [weasyprint](https://github.com/Kozea/WeasyPrint) service.  It uses a gunicorn wsgi server by [aquavitae](https://github.com/aquavitae/docker-weasyprint).
 
 A sample docker-compose configuration is as follows:
     
@@ -21,7 +21,3 @@ A `GET` to `localhost:5001/version` should output the weasyprint version (curren
 ### Fonts
 
 In order to make fonts available to weasyprint, simply copy them into `./fonts` and build the image.
-
-
-[weasy](https://github.com/Kozea/WeasyPrint) 
-[aquavitae-repo](https://github.com/aquavitae/docker-weasyprint)
