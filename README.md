@@ -1,12 +1,12 @@
 # docker-weasyprint
 
-This is a very simple Dockerfile to create a [weasyprint](https://github.com/Kozea/WeasyPrint) service.  It uses a gunicorn wsgi server by [aquavitae](https://github.com/aquavitae/docker-weasyprint).
+This is a very simple Dockerfile based on [Alpine Linux](https://www.alpinelinux.org).  It creates a very small (105MB+) [weasyprint](https://github.com/Kozea/WeasyPrint) service.  It uses a wsgi server by [aquavitae](https://github.com/aquavitae/docker-weasyprint) to provide weasyprint as a web service.
 
 A sample docker-compose configuration is as follows:
     
     services:
         weasyprint:
-            image: docker.geckodigital.ca/weasyprint:latest
+            build: .
             ports:
               - '5001:5001'
 
