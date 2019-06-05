@@ -1,0 +1,4 @@
+WeasyPrint==47
+gunicorn==19.9.0
+Flask==1.0.3
+boto3==1.9.161
