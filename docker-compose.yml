@@ -1,0 +1,6 @@
+version: '3'
+services:
+    weasyprint:
+        build: .
+        ports:
+          - '5001:5001'
