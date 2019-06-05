@@ -1,11 +1,15 @@
 #!/usr/bin/env python
-
+import os
 import json
 import logging
 
 from flask import Flask, request, make_response
 import weasyprint
 from weasyprint import HTML
+import boto3
+
+BUCKET = os.environ.get('AWS_BUCKET')
+KEY = os.environ.get('AWS_BUCKET_KEY')
 
 app = Flask('pdf')
 
@@ -48,7 +52,6 @@ def home():
         </ul>
     '''
 
-
 @app.route('/pdf', methods=['POST'])
 def generate():
     name = request.args.get('filename', 'unnamed.pdf')
@@ -59,6 +62,31 @@ def generate():
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = 'inline;filename=%s' % name
     app.logger.info(' ==> POST  /pdf?filename=%s  ok' % name)
+
+
+@app.route('/pdfS3', methods=['POST'])
+def generateFromS3():
+    filename = request.form.get('filename', 'unnamed.pdf')
+    app.logger.info('POST  /pdf?filename=%s' % filename)
+
+    url = request.form.get('url')
+    app.logger.info('POST  /pdf?url=%s' % url)
+
+    s3_client = boto3.client('s3')
+    s3_client.download_file(BUCKET, url, '/tmp/testes.html')
+
+    html = HTML('/tmp/testes.html')
+    html.write_pdf('/tmp/%s' % filename)
+
+    response = s3_client.upload_file('/tmp/%s' % filename, BUCKET, 'export-pdf/%s' % filename, ExtraArgs={'ACL': 'public-read', 'ContentType': 'application/pdf' })
+    file_url = '%s/%s/%s' % (s3_client.meta.endpoint_url, BUCKET, 'export-pdf/%s' % filename)
+    app.logger.info(file_url)
+
+    response = make_response(file_url)
+    response.headers['Content-Type'] = 'application/text'
+    # response.headers['Content-Disposition'] = 'inline;filename=%s' % filename
+    app.logger.info(' ==> POST  /pdf?filename=%s  ok' % filename)
+
     return response
 
 
