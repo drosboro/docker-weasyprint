@@ -10,4 +10,4 @@ ADD ./app/server.py /myapp
 RUN mkdir /root/.fonts
 ADD ./.fonts/* /root/.fonts/
 
-CMD gunicorn --bind 0.0.0.0:5001 server:app
+CMD gunicorn --timeout 900 --bind 0.0.0.0:5001 server:app
