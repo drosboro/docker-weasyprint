@@ -9,7 +9,7 @@ from weasyprint import HTML
 import boto3
 
 BUCKET = os.environ.get('AWS_BUCKET')
-KEY = os.environ.get('AWS_BUCKET_KEY')
+BUCKET_KEY = os.environ.get('AWS_BUCKET_KEY')
 
 app = Flask('pdf')
 
@@ -66,26 +66,38 @@ def generate():
 
 @app.route('/pdfS3', methods=['POST'])
 def generateFromS3():
-    filename = request.form.get('filename', 'unnamed.pdf')
-    app.logger.info('POST  /pdf?filename=%s' % filename)
+    origin_filename = request.form.get('originFilename', 'unnamed.pdf')
+    destination_filename = request.form.get('destinationFilename', 'unnamed.pdf')
+    app.logger.info('POST  /pdfS3?originFilename=%s' % origin_filename)
+    app.logger.info('POST  /pdfS3?destinationFilename=%s' % destination_filename)
 
-    url = request.form.get('url')
-    app.logger.info('POST  /pdf?url=%s' % url)
+    origin_path = '/tmp/%s' % origin_filename
+    origin_object_name = '%s/%s' % (BUCKET_KEY, origin_filename)
+    app.logger.info('POST  /pdfS3?origin_object_name=%s' % origin_object_name)
+    destination_path = '/tmp/%s' % destination_filename
+    destination_object_name = '%s/%s' % (BUCKET_KEY, destination_filename)
+    app.logger.info('POST  /pdfS3?destination_object_name=%s' % destination_object_name)
 
     s3_client = boto3.client('s3')
-    s3_client.download_file(BUCKET, url, '/tmp/testes.html')
+    s3_client.download_file(BUCKET, origin_object_name, origin_path)
 
-    html = HTML('/tmp/testes.html')
-    html.write_pdf('/tmp/%s' % filename)
+    html = HTML(origin_path)
+    html.write_pdf(destination_path)
 
-    response = s3_client.upload_file('/tmp/%s' % filename, BUCKET, 'export-pdf/%s' % filename, ExtraArgs={'ACL': 'public-read', 'ContentType': 'application/pdf' })
-    file_url = '%s/%s/%s' % (s3_client.meta.endpoint_url, BUCKET, 'export-pdf/%s' % filename)
+    response = s3_client.upload_file(
+        destination_path,
+        BUCKET,
+        destination_object_name,
+        ExtraArgs={ 'ACL': 'public-read', 'ContentType': 'application/pdf' }
+    )
+    
+    file_url = '%s/%s/%s' % (s3_client.meta.endpoint_url, BUCKET, destination_object_name)
     app.logger.info(file_url)
 
     response = make_response(file_url)
     response.headers['Content-Type'] = 'application/text'
     # response.headers['Content-Disposition'] = 'inline;filename=%s' % filename
-    app.logger.info(' ==> POST  /pdf?filename=%s  ok' % filename)
+    app.logger.info(' ==> POST  /pdfS3?filename=%s  ok' % destination_object_name)
 
     return response
 
