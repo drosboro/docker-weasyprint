@@ -13,7 +13,7 @@ BUCKET_KEY = os.environ.get('AWS_BUCKET_KEY')
 
 app = Flask('pdf')
 
-@app.route('/health')
+@app.route('/status')
 def index():
     return 'ok'
 

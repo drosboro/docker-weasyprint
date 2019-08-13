@@ -5,7 +5,7 @@ To use, `POST` some HTML to `localhost:5001/pdf`.  The response will be a render
 
 ### Health Checks
 
-A `GET` to `localhost:5001/health` should result in an `ok` response.
+A `GET` to `localhost:5001/status` should result in an `ok` response.
 
 A `GET` to `localhost:5001/version` should output the weasyprint version (currently `0.47`).
 
