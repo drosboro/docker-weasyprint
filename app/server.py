@@ -74,26 +74,26 @@ def generateFromS3():
     app.logger.info('POST  /pdfS3?destinationFilename=%s' % destination_filename)
 
     origin_path = '/tmp/%s' % origin_filename
-    origin_object_name = '%s/%s' % (BUCKET_KEY, origin_filename)
+    origin_object_name = '%s/%s' % (BUCKET_ORIGIN_KEY, origin_filename)
     app.logger.info('POST  /pdfS3?origin_object_name=%s' % origin_object_name)
     destination_path = '/tmp/%s' % destination_filename
-    destination_object_name = '%s/%s' % (BUCKET_KEY, destination_filename)
+    destination_object_name = '%s/%s' % (BUCKET_DESTINATION_KEY, destination_filename)
     app.logger.info('POST  /pdfS3?destination_object_name=%s' % destination_object_name)
 
     s3_client = boto3.client('s3')
-    s3_client.download_file(BUCKET, origin_object_name, origin_path)
+    s3_client.download_file(BUCKET_ORIGIN, origin_object_name, origin_path)
 
     html = HTML(origin_path)
     html.write_pdf(destination_path)
 
     response = s3_client.upload_file(
         destination_path,
-        BUCKET,
+        BUCKET_DESTINATION,
         destination_object_name,
         ExtraArgs={ 'ACL': 'public-read', 'ContentType': 'application/pdf' }
     )
     
-    file_url = '%s/%s/%s' % (s3_client.meta.endpoint_url, BUCKET, destination_object_name)
+    file_url = '%s/%s/%s' % (s3_client.meta.endpoint_url, BUCKET_DESTINATION, destination_object_name)
     app.logger.info(file_url)
 
     response = make_response(file_url)
