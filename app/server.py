@@ -8,8 +8,10 @@ import weasyprint
 from weasyprint import HTML
 import boto3
 
-BUCKET = os.environ.get('AWS_BUCKET')
-BUCKET_KEY = os.environ.get('AWS_BUCKET_KEY')
+BUCKET_ORIGIN = os.environ.get('AWS_ORIGIN_BUCKET')
+BUCKET_ORIGIN_KEY = os.environ.get('AWS_ORIGIN_BUCKET_KEY')
+BUCKET_DESTINATION = os.environ.get('AWS_DESTINATION_BUCKET')
+BUCKET_DESTINATION_KEY = os.environ.get('AWS_DESTINATION_BUCKET_KEY')
 
 app = Flask('pdf')
 
